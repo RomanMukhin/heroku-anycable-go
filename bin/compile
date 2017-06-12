@@ -1,0 +1,25 @@
+#!/bin/bash
+
+indent() {
+  sed -u 's/^/       /'
+}
+
+DOWNLOAD_URL=https://s3.amazonaws.com/anycable/builds/0.4.1/anycable-go-0.4.1-linux-amd64
+BUILD_DIR=$1
+
+echo "DOWNLOAD_URL = " $DOWNLOAD_URL | indent
+
+cd $BUILD_DIR
+mkdir -p vendor
+cd vendor
+mkdir -p anycable-go
+cd anycable-go
+
+echo Vendoring anycable-go server | indent
+curl -o anycable-go -L --silent $DOWNLOAD_URL
+chmod u=rwx anycable-go
+
+echo "exporting PATH" | indent
+PROFILE_PATH="$BUILD_DIR/.profile.d/anycable-go.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH="$PATH:$HOME/vendor/anycable-go"' >> $PROFILE_PATH
